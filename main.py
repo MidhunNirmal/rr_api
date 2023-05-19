@@ -5,6 +5,12 @@ from database import engine,SessionLocal
 import model
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
+import pyqrcode
+import png
+
+# Generate QR code
+
+
 
 app = FastAPI()
 model.Base.metadata.create_all(engine)
@@ -56,9 +62,13 @@ async def user(db : Session = Depends(get_db)):
     user1 = db.query(model.user).all()
     return user1
 
-@app.get('/users',tags=['user'])
-async def qr(db : Session = Depends(get_db)):
+@app.get('/qr_gen/{id1}',tags=['user'])
+async def qr(id1:int,db : Session = Depends(get_db)):
+    user = db.query(model.user).filter(model.user.id == id1).first()
+    key = user.name
+    code = pyqrcode.create(key)
+    qr_data = code.png_as_base64_str(scale=5)
+
     
-    user1 = db.query(model.user).all()
-    return user1
+    return {'qrdata':qr_data}
 
