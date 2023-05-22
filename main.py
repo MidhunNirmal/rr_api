@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 import pyqrcode
 import png
+from sqlalchemy import desc
 
 # Generate QR code
 
@@ -47,7 +48,7 @@ async def user(request:schemas.User,db : Session = Depends(get_db)):
     db.refresh(user)
     
     return user
-
+ 
 
 @app.get('/user/{id1}',tags=['user'])
 async def user(id1:int,db : Session = Depends(get_db)):
@@ -71,4 +72,19 @@ async def qr(id1:int,db : Session = Depends(get_db)):
 
     
     return {'qrdata':qr_data}
+
+@app.put('/pointincrement/{id1}',tags=['user'])
+async def user(id1:int,db : Session = Depends(get_db)):
+    
+    user = db.query(model.user).filter(model.user.id == id1).first()
+    user.points=user.points+10
+    db.commit()
+    return "updated 10 points"
+
+
+@app.get('/user_leaderboadrd',tags=['user'])
+async def user(db : Session = Depends(get_db)):
+    
+    users = db.query(model.user).order_by(desc(model.user.points)).all()
+    return users
 

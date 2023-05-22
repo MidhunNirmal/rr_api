@@ -9,5 +9,6 @@ class user(Base):
     name=Column(String) 
     email=Column(String) 
     password=Column(String)
+    points = Column(Integer,default=0)
     # qr = Column(LargeBinary, nullable = True)
     
