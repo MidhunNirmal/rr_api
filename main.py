@@ -11,7 +11,7 @@ from tocken1 import create_access_token
 from sqlalchemy import desc
 import uuid
 import oaut2
-from typing import Annotated
+# from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 # Generate QR code
@@ -115,6 +115,6 @@ def login(request:OAuth2PasswordRequestForm= Depends(),db : Session = Depends(ge
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.get("/users/me/", response_model=None)
-async def read_users_me(current_user: Annotated[schemas.User, Depends(oaut2.get_current_active_user)]):
+async def read_users_me(current_user: schemas.User= Depends(oaut2.get_current_active_user)):
     return current_user
     
