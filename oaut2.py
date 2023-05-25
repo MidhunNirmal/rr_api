@@ -48,4 +48,23 @@ async def get_current_active_user(data:str = Depends(oauth2_scheme),db : Session
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="invalid password")
     
+async def adminlogin(data:str = Depends(oauth2_scheme),db : Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(data, SECRET_KEY, algorithms=[ALGORITHM])
+        print(payload)
+        id1  = payload.get("role")
+        if id1 == "admin":
+            print(id1)
+            user = db.query(model.user).filter(model.user.role == id1).first()
+            return user
+        else:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="you are not admin")
+    except JWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="invalid password")
+    
     

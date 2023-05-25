@@ -45,10 +45,10 @@ def get_db():
 
 
 @app.post('/user',tags=['user'])
-async def user(request:schemas.User,db : Session = Depends(get_db)):
+async def user(request:schemas.User1,db : Session = Depends(get_db)):
     
     userid = str(uuid.uuid4())
-    user1 = model.user(name = request.Name,email = request.email,password = request.password,uid =  userid)
+    user1 = model.user(name = request.Name,email = request.email,password = request.password,uid =  userid,role = request.role)
     
     db.add(user1)
     db.commit()
@@ -65,15 +65,15 @@ async def user(id1:int,db : Session = Depends(get_db),get_current_user : schemas
 
 
 @app.get('/users',tags=['user'])
-async def user(db : Session = Depends(get_db)):
+async def user(db : Session = Depends(get_db),get_current_user : schemas.User = Depends(oaut2.adminlogin)):
     
     user1 = db.query(model.user).all()
     return user1
 
-@app.get('/qr_gen/{id1}',tags=['user'])
-async def qr(id1:int,db : Session = Depends(get_db)):
-    user = db.query(model.user).filter(model.user.id == id1).first()
-    key = user.uid
+@app.get('/qr_gen',tags=['user'])
+async def qr(db : Session = Depends(get_db),current_user: schemas.User= Depends(oaut2.get_current_active_user)):
+    # user = db.query(model.user).filter(model.user.id == id1).first()
+    key = current_user.uid
     code = pyqrcode.create(key)
     qr_data = code.png_as_base64_str(scale=5)
     
@@ -111,10 +111,32 @@ def login(request:OAuth2PasswordRequestForm= Depends(),db : Session = Depends(ge
     if (user.password != request.password ):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="invalid credential")
     
-    access_token = create_access_token(data={"sub": user.name,"id":user.id})
+    access_token = create_access_token(data={"sub": user.name,"id":user.id,"role":user.role})
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.get("/users/me/", response_model=None)
 async def read_users_me(current_user: schemas.User= Depends(oaut2.get_current_active_user)):
     return current_user
     
+
+
+
+
+
+
+# route for the product
+
+
+
+
+
+@app.post('/add_product',tags=['product'])
+async def user(request:schemas.product,db : Session = Depends(get_db)):
+    
+    prodid = str(uuid.uuid4())
+    product1 = model.Product(pname = request.pname,ppid = prodid)
+    db.add(product1)
+    db.commit()
+    db.refresh(product1) 
+    return product1
+

@@ -6,16 +6,20 @@ class User(BaseModel):
     Name:str
     password:str
     email:str
-class User(BaseModel):
+class User1(BaseModel):
     Name:str
     password:str
     email:str
+    role:str
 class login(BaseModel):
     Name:str
     password:str
     
 class UserInDB(User):
-    password: str    
+    password: str 
+    
+class product(BaseModel):
+    pname:str
 
     
 class Token(BaseModel):

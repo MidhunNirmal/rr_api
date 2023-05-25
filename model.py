@@ -11,19 +11,20 @@ class user(Base):
     password=Column(String)
     points = Column(Integer,default=0)
     uid = Column(String)
+    role = Column(String,default="user")
     
-class product(Base):
+class Product(Base):
     __tablename__ = "product"
 
-    id = Column(Integer,primary_key = True,index = True)
-    pname=Column(String) 
-    pid = Column(String, nullable = True,primary_key = True)
-    puechaserd = Column(Boolean,default=False)
+    pid = Column(Integer, index=True, primary_key=True)
+    pname = Column(String)
+    ppid = Column(String, nullable=True)
+    puechaserd = Column(Boolean, default=False)
 
-class purchase(Base):
+class purchase(Base):  
     __tablename__ = "purchase info"
 
-    id = Column(Integer,primary_key = True,index = True)
+    id = Column(Integer,index = True,primary_key = True)
     pname=Column(String) 
     pid = Column(String, nullable = True,primary_key = True)
     puechaserd = Column(Boolean,default=False)
